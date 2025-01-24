@@ -24,7 +24,7 @@ spec:
   - name: output-image
     value: quay.io/konflux-fedora/fedora-infra-tenant/forgejo-deployment-images:{{revision}}
   - name: dockerfile
-    value: forgejo/Dockerfile
+    value: Dockerfile
   pipelineSpec:
     description: |
       This pipeline is ideal for building container images from a Containerfile while reducing network traffic.
