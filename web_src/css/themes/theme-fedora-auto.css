@@ -1,0 +1,2 @@
+@import "theme-fedora-light.css";
+@import "theme-fedora-dark.css" (prefers-color-scheme: dark);
