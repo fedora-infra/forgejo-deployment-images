@@ -1,0 +1,27 @@
+name: branch_sync
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: '@daily'
+
+jobs:
+  branch_sync:
+    if: vars.MIRROR_DESTINATION != ''
+    runs-on: codeberg-tiny
+    container:
+      image: 'data.forgejo.org/oci/node:20-bookworm'
+    steps:
+      - name: git push {v*/,}forgejo
+        run: |
+          git init --bare .
+          git remote add origin "https://codeberg.org/forgejo/forgejo.git"
+          git fetch origin refs/heads/v10.0/forgejo:refs/mirror/forgejo
+          git ls-remote origin refs/heads/v*/forgejo | while read sha full_ref ; do
+            ref=${full_ref#refs/heads/}
+            echo git fetch origin $full_ref:refs/mirror/$ref
+            git fetch origin $full_ref:refs/mirror/$ref
+          done
+          echo git push --force https://${{ vars.MIRROR_DESTINATION }} refs/mirror/*:refs/heads/*
+          git push --force https://any:${{ secrets.FORGEJO_TOKEN }}@${{ vars.MIRROR_DESTINATION }} refs/mirror/*:refs/heads/*
