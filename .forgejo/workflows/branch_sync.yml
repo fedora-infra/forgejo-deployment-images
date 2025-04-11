@@ -23,5 +23,5 @@ jobs:
             echo git fetch origin $full_ref:refs/mirror/$ref
             git fetch origin $full_ref:refs/mirror/$ref
           done
-          echo git push --force https://${{ vars.MIRROR_DESTINATION }} refs/mirror/*:refs/heads/*
-          git push --force https://any:${{ secrets.FORGEJO_TOKEN }}@${{ vars.MIRROR_DESTINATION }} refs/mirror/*:refs/heads/*
+          echo git push https://${{ vars.MIRROR_DESTINATION }} refs/mirror/*:refs/heads/*
+          git push https://any:${{ secrets.FORGEJO_TOKEN }}@${{ vars.MIRROR_DESTINATION }} refs/mirror/*:refs/heads/*
