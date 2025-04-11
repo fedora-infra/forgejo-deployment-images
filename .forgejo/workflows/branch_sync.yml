@@ -13,11 +13,11 @@ jobs:
     container:
       image: 'data.forgejo.org/oci/node:20-bookworm'
     steps:
-      - name: git push {v*/,}forgejo
+      - name: synchronize versioned {v/*} and unversioned forgejo branches
         run: |
           git init --bare .
           git remote add origin "https://codeberg.org/forgejo/forgejo.git"
-          git fetch origin refs/heads/v10.0/forgejo:refs/mirror/forgejo
+          git fetch origin refs/heads/forgejo:refs/mirror/forgejo
           git ls-remote origin refs/heads/v*/forgejo | while read sha full_ref ; do
             ref=${full_ref#refs/heads/}
             echo git fetch origin $full_ref:refs/mirror/$ref
