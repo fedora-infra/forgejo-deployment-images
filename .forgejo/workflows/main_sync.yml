@@ -1,0 +1,42 @@
+name: main_sync
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: '@weekly'  # Run at midnight every Sunday
+
+jobs:
+  main_sync:
+    if: vars.REPO_DESTINATION != ''
+    runs-on: codeberg-tiny
+    container:
+      image: 'data.forgejo.org/oci/node:20-bookworm'
+    steps:
+      - name: Checkout repository
+        run: |
+          git clone -b main https://${{ vars.REPO_DESTINATION }} .
+          git config user.name "forgejo-bot"
+          git config user.email "forgejo-bot@forgejo.org"
+
+      - name: Fetch forgejo v11.0/forgejo and push to repo
+        run: |
+          git remote add forgejo "https://codeberg.org/forgejo/forgejo.git"
+          git fetch forgejo v11.0/forgejo:forgejo-action-v11.0
+
+          # Push the rebased branch
+          git push https://${{ secrets.FORGEJO_TOKEN }}@${{ vars.REPO_DESTINATION }} forgejo-action-v11.0
+
+      - name: Create Pull Request
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.FORGEJO_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "title": "Rebase on v11.0/forgejo",
+              "body": "This PR contains the rebased commits from main on top of v11.0/forgejo",
+              "head": "forgejo-action-v11.0",
+              "base": "main"
+            }' \
+            https://codeberg.org/api/v1${{ API_ENDPOINT_PULL_REQUEST }}
+
