@@ -1,0 +1,21 @@
+name: trigger_konflux_build
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - v11.0/forgejo
+
+jobs:
+  trigger_build:
+    runs-on: codeberg-tiny
+    container:
+      image: 'data.forgejo.org/oci/minimal:latest'
+    steps:
+      - name: Clone and push empty commit
+        run: |
+          git clone https://codeberg.org/fedora/oci-image-definitions.git .
+          git config user.name "forgejo-bot"
+          git config user.email "forgejo-bot@forgejo.org"
+          git commit --allow-empty -m "Commit bump"
+          git push https://${{ secrets.FORGEJO_TOKEN }}@codeberg.org/fedora/oci-image-definitions.git 
