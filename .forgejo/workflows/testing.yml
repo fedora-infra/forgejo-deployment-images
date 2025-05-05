@@ -4,13 +4,14 @@ on:
   pull_request:
   push:
     branches:
+      - 'main'
       - 'forgejo*'
       - 'v*/forgejo*'
   workflow_dispatch:
 
 jobs:
   backend-checks:
-    if: vars.ROLE == 'forgejo-coding' || vars.ROLE == 'forgejo-testing'
+    if: vars.ROLE == 'fedora-forgejo-coding' || vars.ROLE == 'fedora-forgejo-testing'
     runs-on: docker
     container:
       image: 'data.forgejo.org/oci/node:22-bookworm'
